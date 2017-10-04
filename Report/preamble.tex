@@ -1,0 +1,75 @@
+\documentclass[12pt,norsk,a4paper]{article}
+\usepackage{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{color}
+\usepackage{physics}
+\usepackage{listings}
+\usepackage{siunitx}
+\usepackage{todonotes}
+\usepackage[version=4]{mhchem}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{tikz}
+\usepackage{mhchem}
+\usepackage{pdfpages}
+\usepackage[margin=1.3cm, includeheadfoot]{geometry}
+\newcommand{\RN}[1]{%
+	\textup{\uppercase\expandafter{\romannumeral#1}}%
+}
+\renewcommand{\exp}[1]{\mathrm{e}^{#1}}
+
+
+
+%reference
+%\usepackage{biblatex}
+%\addbibresource{sources.bib}
+%to here
+
+%for text boxes
+\usepackage{fancybox}
+\usepackage{framed}
+\usepackage{color}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+%to here
+
+
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstset{showstringspaces=false,
+	basicstyle=\ttfamily,
+	keywordstyle=\color{codegreen},
+	commentstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	breaklines=true,
+	literate={0}{{\textcolor{blue}{0}}}{1}%
+	{1}{{\textcolor{blue}{1}}}{1}%
+	{2}{{\textcolor{blue}{2}}}{1}%
+	{3}{{\textcolor{blue}{3}}}{1}%
+	{4}{{\textcolor{blue}{4}}}{1}%
+	{5}{{\textcolor{blue}{5}}}{1}%
+	{6}{{\textcolor{blue}{6}}}{1}%
+	{7}{{\textcolor{blue}{7}}}{1}%
+	{8}{{\textcolor{blue}{8}}}{1}%
+	{9}{{\textcolor{blue}{9}}}{1}%
+	{.0}{{\textcolor{blue}{.0}}}{2}% Following is to ensure that only periods
+	{.1}{{\textcolor{blue}{.1}}}{2}% followed by a digit are changed.
+	{.2}{{\textcolor{blue}{.2}}}{2}%
+	{.3}{{\textcolor{blue}{.3}}}{2}%
+	{.4}{{\textcolor{blue}{.4}}}{2}%
+	{.5}{{\textcolor{blue}{.5}}}{2}%
+	{.6}{{\textcolor{blue}{.6}}}{2}%
+	{.7}{{\textcolor{blue}{.7}}}{2}%
+	{.8}{{\textcolor{blue}{.8}}}{2}%
+	{.9}{{\textcolor{blue}{.9}}}{2}%
+}
+

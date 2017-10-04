@@ -1,0 +1,199 @@
+\input{preamble}
+\begin{document}
+\author{Thomas Aarflot Storaas    $\qquad$    Erik Skaar  $\qquad$    Mikael Kiste}
+\title{Report 2}
+\maketitle
+
+
+\textbf{We are a bit behind schedule. This is an incomplete report. For the newest version of the report visit \href{https://github.com/erikfsk/Project-2}{\textcolor{blue}{github}}.}
+
+\section{Abstract}
+
+
+\section{Introduction}
+The aim of this project is to create a program that finds eigenvalues with Jacobi's(Givens') method. We start off with studying the quantum mechanical problem of a particle in an infinite potential well, generating a general solution to find the eigenvalues of a matrix. Then moving on to two particles with Coulomb interactions.
+
+\section{Underlying theory}
+
+For electrons it is safe to assume a sentro symmetric potential, making it reasonable to use spherical coordinates. Here the angle dependent parts of the Schrödinger equation is independent of the position $r$. To model the electron further only the radial part of the SE is needed.
+
+\begin{align}
+	&-\frac{\hbar^2}{2m}\qty(\frac{1}{r^2}\pdv{r}r^2\pdv{r}-\frac{l(l+1)}{r^2})R(r)+V(r)R(r)=ER(r) &r\in[0,\infty)
+\end{align}
+
+Here $V(r)=(1/2)m\omega^2r^2$ the middle term can be expressed as $m\omega^2=k$. The eigenvalues($E$) are here the energy of the harmonic oscillator.  The frequency $\omega$ of the system are given as:
+
+\begin{align}
+	E_{nl}&=\hbar\omega\qty(2n+l+\frac{3}{2}) &n,l=0,1,2,3...
+\end{align}
+
+Here the variable $l$ is the orbital momentum of the electron. To further simplify the expression a substitution of variables can be made.
+ 
+\begin{align*}
+	-&\frac{\hbar^2}{2m}\qty(\frac{1}{r^2}\pdv{r}r^2\pdv{r}-\frac{l(l+1)}{r^2})R(r)+V(r)R(r)=ER(r)\\
+	&R(r)=\frac{1}{r}u(r)\qquad \qquad u(0)=u(\infty)=0\\
+	-&\frac{\hbar^2}{2m}\pdv[2]{u(r)}{r}+\qty(V(r)+\frac{l(l+1)}{r^2}\frac{hbar^2}{2m})u(r)=Eu(r)\\
+\end{align*}
+
+\subsection{Generalization}
+
+To beam this specific example into a more general one dimensionless variables were introduced.
+$\rho=(1/\alpha)r$ is introduced with $\alpha$ having the dimension length. $l$ is fixed to zero. 
+
+\begin{align*}
+	-\frac{\hbar^2}{2m\alpha^2}\pdv[2]{u(\rho)}{\rho}+V(\rho)u(\rho)=Eu(\rho)\\
+\end{align*}
+
+The potential is now defined to $V(\rho)=(1/2)k\alpha^2\rho^2$.
+
+\begin{align*}
+	-\frac{\hbar^2}{2m\alpha^2}\pdv[2]{u(\rho)}{\rho}+\frac{1}{2}k\alpha^2\rho^2u(\rho)=Eu(\rho)\\
+	-\pdv[2]{u(\rho)}{\rho}+\frac{m}{\hbar^2}k\alpha^4\rho^2u(\rho)=\frac{2m\alpha^2}{\hbar^2}Eu(\rho)\\	
+\end{align*}
+
+To remove the units in the potential one can set $\alpha=\sqrt[4]{\frac{\hbar^2}{mk}}$, and the variables on the right hand side can be defined as $\lambda=\frac{2m\alpha^2}{\hbar^2}=E$
+\begin{align}
+	-\pdv[2]{u(\rho)}{\rho}+\rho^2u(\rho)=\lambda u(\rho)\label{general1particle}
+\end{align}
+This is now reduced to a general second derivative discrete function and can be expressed as:
+\begin{align}
+	\pdv[2]{u(\rho)}{\rho}=\frac{u(\rho+h)-2u(\rho)+u(\rho-h)}{h^2}+O(h^2)\label{generalwitherror}
+\end{align}
+Here $h$ is the step length. The limits of the new variable $\rho$ also needs to be defined. The lower limit, $r_{\mathrm{min}}=0\to\rho=0$ is fine, but the upper limit causes trouble. Here  $r_{\mathrm{max}}=\infty\to\rho=\infty$. This is not possible to represent on a computer. Since the function now has a discrete approximation a discrete value can also be given for the upper limit. $\rho=\rho_\mathrm{max}$. The step length will now be defined from the total amount of steps in the approximation.
+
+\begin{align*}
+	h=\frac{\rho_\mathrm{max}-\rho_\mathrm{min}}{N}
+\end{align*} 
+
+Indexing the steps after the number of steps taken will further be beneficial.
+\begin{align*}
+	\rho_0&\cdots\rho_i\cdots\rho_N \qquad \qquad i=0,1,2....N\\
+	\rho_i&=\rho_0+hi
+\end{align*}
+
+Rewriting 
+\begin{align}
+	\pdv[2]{u(\rho)}{\rho}=\frac{u(\rho+h)-2u(\rho)+u(\rho-h)}{h^2}+O(h^2)
+\end{align}
+
+Applying the step-wise $\rho_i$ to the general result \ref{general1particle}, inserting \ref{generalwitherror} gives:
+
+\begin{align*}
+	-\frac{u(\rho_i+h)-2u(\rho_i)+u(\rho_i-h)}{h^2}+\rho_i^2u(\rho_i)=\lambda u(\rho_i)	
+\end{align*}
+
+A short hand notation of this would be to bring the variable the function $u$ works on into the subscript, $u(\rho_i)=u_i$.
+
+\begin{align}
+	-\frac{u_{i+1}-2u_i+u_{i-1}}{h^2}+V_i^2u_i=\lambda u_i
+\end{align}
+
+Systematizing this result into a matrix were a column represents $u_i$ will yield the following:
+
+\begin{equation}
+	\begin{bmatrix} \frac{2}{h^2}+V_1 & -\frac{1}{h^2} & 0   & 0    & \dots  &0     & 0 \\
+		-\frac{1}{h^2} & \frac{2}{h^2}+V_2 & -\frac{1}{h^2} & 0    & \dots  &0     &0 \\
+		0   & -\frac{1}{h^2} & \frac{2}{h^2}+V_3 & -\frac{1}{h^2}  &0       &\dots & 0\\
+		\dots  & \dots & \dots & \dots  &\dots      &\dots & \dots\\
+		0   & \dots & \dots & \dots  &-\frac{1}{h^2}  &\frac{2}{h^2}+V_{N-2} & -\frac{1}{h^2}\\
+		0   & \dots & \dots & \dots  &\dots       &-\frac{1}{h^2} & \frac{2}{h^2}+V_{N-1}
+	\end{bmatrix}
+ 	 \begin{bmatrix} u_{0} \\
+		u_{1} \\
+		\dots\\ \dots\\ \dots\\
+		u_{N}
+	\end{bmatrix}=\lambda\begin{bmatrix} u_{0} \\
+	u_{1} \\
+	\dots\\ \dots\\ \dots\\
+	u_{N}
+	\end{bmatrix}
+	\label{eq:matrixse} 
+\end{equation}
+Note here that the end and start columns have been removed due to them being known from the boundary conditions. From the matrix one can define a better short hand notation for the values:
+
+The diagonal matrix elements:
+\begin{equation*}
+d_i=\frac{2}{h^2}+V_i,
+\end{equation*}
+The non-diagonal matrix elements:
+\begin{equation*}
+e_i=-\frac{1}{h^2}.
+\end{equation*}
+
+\section{Method}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Result}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Discussion}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Conclusion}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\printbibliography
+
+\end{document}

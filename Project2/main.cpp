@@ -9,8 +9,11 @@
 using namespace std;
 using namespace arma;
 
+void interacting(int n, double h,double w_r);
+void noninteracting(int n, double h);
 
 bool test_jacobi();
+bool test_biggest_func();
 vec jacobi(mat a, int n);
 void jacobi_solver(mat &a,int n,int k,int l);
 double biggest_func(mat a,int n, int &k, int &l);
@@ -23,18 +26,33 @@ int write_to_file(string datafil,mat f_tilde,int n,double h);
 int main (int argc, char *argv[])
 {
 
-    if(!test_jacobi) {
+    if(!test_jacobi() || !test_biggest_func()) {
         cout << "error" << endl;
         exit(0);
     }
 
-    double rho_end = 5;
+
     //int n = atoi(argv[1]);
-    int n = 60;
+    int n = 100;
+    double w_r = 0.1;
+    double rho_end = 7;
     double h = (rho_end)/n;
 
+    noninteracting(n,h);
+    interacting(n,h,w_r);
 
-    //non interact
+    //cout << sort(eig_sym(V)) << endl;
+    // 3, 7, 11
+    // omega1 non interact
+
+    boost::timer t_test;
+    t_test.elapsed();
+}
+
+
+
+
+void noninteracting(int n, double h){
     mat V = zeros<mat>(n,n);
     for (int i=0; i<n; i++) {
         V(i,i)= (2/(h*h)) +(h*i*h*i);
@@ -46,11 +64,15 @@ int main (int argc, char *argv[])
         }
     }
 
-    /*interact
-    double w_r = 0.1;
+    cout << jacobi(V,n) << endl;
+}
+
+
+
+void interacting(int n, double h,double w_r){
     mat V = zeros<mat>(n,n);
     for (int i=0; i<n; i++) {
-        V(i,i)= (2/(h*h)) +w_r*w_r*(h*i*h*i) + (1/(h*i));
+        V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i));
         if (i < n-1){
           V(i+1,i) = -1/(h*h);
         }
@@ -58,27 +80,25 @@ int main (int argc, char *argv[])
           V(i-1,i) = -1/(h*h);
         }
     }
-    */
+    cout << "interacting" << endl;
     cout << jacobi(V,n) << endl;
-
-    //cout << sort(eig_sym(V)) << endl;
-    // 3, 7, 11
-    // omega1 non interact
-
-    boost::timer t_test;
-    t_test.elapsed();
+    cout << "interacting" << endl;
 }
+
+
 
 vec jacobi(mat a, int n)
 {
     int k;
     int l;
     double biggest = biggest_func(a,n,k,l);
-    while (abs(biggest)>0.001){
+    while (abs(biggest)>0.01){
         jacobi_solver(a,n,k,l);
         biggest = biggest_func(a,n,k,l);
     }
+    cout << "acting" << endl;
     vec eigs = sort(a.diag());
+    cout << "acting" << endl;
     vec smallEigs(3);
     smallEigs(0) = eigs(0);
     smallEigs(1) = eigs(1);
@@ -96,7 +116,7 @@ void jacobi_solver(mat &a,int n,int k,int l){
     } else {
         t_ = -1.0/ (-tau + sqrt(1.0 + tau*tau));
     }
-    //double t_ = -tau + sqrt(1+(tau*tau));
+
     double c_ = 1/sqrt(1 + (t_*t_));//cos(theta)
     double s_ = c_*t_;//sin(theta)
     double a_kk = a(k,k);
@@ -119,6 +139,8 @@ void jacobi_solver(mat &a,int n,int k,int l){
     }
 }
 
+
+
 double biggest_func(mat a,int n, int &k, int &l){
     double biggest = 0;
     for(int i = 0;i<n;i++){
@@ -135,25 +157,60 @@ double biggest_func(mat a,int n, int &k, int &l){
 }
 
 
-int write_to_file(string datafil,mat f_tilde,int n,double h)
-{
-    ofstream outFile;
-    outFile.open(datafil, std::ios::out);
-    if (! outFile.is_open()) {
-        cout << "Problem opening file." << endl;
-        exit(1);
-    }
-    for (int i = 0; i < n; i++) {
-        outFile << (i+1)*h << " " <<  f_tilde[i] << endl;
-    }
-    outFile.close();
-    return 0;
-}
-
 
 bool test_jacobi(){
-    //mat a;
-    //a = jacobi();
+    int n = 3;
+    mat test = zeros<mat>(n,n);
+    for (int i=0; i<n; i++) {
+        test(i,i)= 1;
+        if (i < n-1){
+          test(i+1,i) = 2;
+        }
+        if (i > 0){
+          test(i-1,i) = 2;
+        }
+    }
+
+    double tol = 1e-5;
+    mat computed = jacobi(test,n);
+    vec expected = sort(eig_sym(test)); // testing with armadillo
+
+    for(int i = 0; i < 3; i++){
+        if (abs(computed(i) - expected(i)) > tol){
+            return false;
+        }
+    }
+    cout << "jacobi test was successful" << endl;
     return true;
 }
+
+
+
+bool test_biggest_func(){
+    int n = 3;
+    mat test = zeros<mat>(n,n);
+    for (int i=0; i<n; i++) {
+        test(i,i)= 33;
+        if (i < n-1){
+          test(i+1,i) = 7;
+        }
+        if (i > 0){
+          test(i-1,i) = 1;
+        }
+    }
+
+    int k = 0;
+    int l = 0;
+    double tol = 1e-5;
+    double expected = 7;
+    double computed = biggest_func(test,n,k,l);
+    if (abs(computed - expected) > tol){
+        return false;
+    }
+    cout << "Biggest_func test was successful" << endl;
+    return true;
+}
+
+
+
 

@@ -71,7 +71,6 @@ void noninteracting(int n, double h){
 
 void interacting(int n, double h,double w_r){
     mat V = zeros<mat>(n,n);
-    cout << h << endl;
     for (int i=0; i<n; i++) {
         V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i));
         if (i < n-1){
@@ -81,6 +80,7 @@ void interacting(int n, double h,double w_r){
           V(i-1,i) = -1/(h*h);
         }
     }
+    cout << sort(eig_sym(V)) << endl;
     cout << "interacting" << endl;
     cout << jacobi(V,n) << endl;
     cout << "interacting" << endl;
@@ -93,7 +93,7 @@ vec jacobi(mat a, int n)
     int k;
     int l;
     double biggest = biggest_func(a,n,k,l);
-    while (abs(biggest)>0.0001){
+    while (abs(biggest)>0.001){
         jacobi_solver(a,n,k,l);
         biggest = biggest_func(a,n,k,l);
     }

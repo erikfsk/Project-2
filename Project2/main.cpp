@@ -33,13 +33,13 @@ int main (int argc, char *argv[])
 
 
     //int n = atoi(argv[1]);
-    int n = 100;
-    double w_r = 0.1;
-    double rho_end = 7;
+    int n = 200;
+    double w_r = 1;
+    double rho_end = 5;
     double h = (rho_end)/n;
 
     noninteracting(n,h);
-    interacting(n,h,w_r);
+    //interacting(n,h,w_r);
 
     //cout << sort(eig_sym(V)) << endl;
     // 3, 7, 11
@@ -71,6 +71,7 @@ void noninteracting(int n, double h){
 
 void interacting(int n, double h,double w_r){
     mat V = zeros<mat>(n,n);
+    cout << h << endl;
     for (int i=0; i<n; i++) {
         V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i));
         if (i < n-1){
@@ -92,11 +93,10 @@ vec jacobi(mat a, int n)
     int k;
     int l;
     double biggest = biggest_func(a,n,k,l);
-    while (abs(biggest)>0.01){
+    while (abs(biggest)>0.0001){
         jacobi_solver(a,n,k,l);
         biggest = biggest_func(a,n,k,l);
     }
-    cout << "acting" << endl;
     vec eigs = sort(a.diag());
     cout << "acting" << endl;
     vec smallEigs(3);

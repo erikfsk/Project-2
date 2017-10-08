@@ -25,7 +25,6 @@ int write_to_file(string datafil,mat f_tilde,int n,double h);
 
 int main (int argc, char *argv[])
 {
-
     if(!test_jacobi() || !test_biggest_func()) {
         cout << "error" << endl;
         exit(0);
@@ -33,20 +32,13 @@ int main (int argc, char *argv[])
 
 
     //int n = atoi(argv[1]);
-    int n = 200;
-    double w_r = 1;
-    double rho_end = 5;
+    int n = 10;
+    double w_r = 0.5;
+    double rho_end = 9;
     double h = (rho_end)/n;
 
     noninteracting(n,h);
-    //interacting(n,h,w_r);
-
-    //cout << sort(eig_sym(V)) << endl;
-    // 3, 7, 11
-    // omega1 non interact
-
-    boost::timer t_test;
-    t_test.elapsed();
+    interacting(n,h,w_r);
 }
 
 
@@ -71,8 +63,10 @@ void noninteracting(int n, double h){
 
 void interacting(int n, double h,double w_r){
     mat V = zeros<mat>(n,n);
+
     for (int i=0; i<n; i++) {
-        V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i));
+
+        V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i)); //changed 1/(h*i) to 1/(h*h)
         if (i < n-1){
           V(i+1,i) = -1/(h*h);
         }
@@ -80,10 +74,7 @@ void interacting(int n, double h,double w_r){
           V(i-1,i) = -1/(h*h);
         }
     }
-    cout << sort(eig_sym(V)) << endl;
-    cout << "interacting" << endl;
     cout << jacobi(V,n) << endl;
-    cout << "interacting" << endl;
 }
 
 
@@ -93,17 +84,12 @@ vec jacobi(mat a, int n)
     int k;
     int l;
     double biggest = biggest_func(a,n,k,l);
-    while (abs(biggest)>0.001){
+    while (abs(biggest)>0.01){
         jacobi_solver(a,n,k,l);
         biggest = biggest_func(a,n,k,l);
     }
-    vec eigs = sort(a.diag());
-    cout << "acting" << endl;
-    vec smallEigs(3);
-    smallEigs(0) = eigs(0);
-    smallEigs(1) = eigs(1);
-    smallEigs(2) = eigs(2);
-    return smallEigs;
+    vec eigs = a.diag();
+    return eigs;
 }
 
 
@@ -172,7 +158,7 @@ bool test_jacobi(){
     }
 
     double tol = 1e-5;
-    mat computed = jacobi(test,n);
+    mat computed = sort(jacobi(test,n));
     vec expected = sort(eig_sym(test)); // testing with armadillo
 
     for(int i = 0; i < 3; i++){

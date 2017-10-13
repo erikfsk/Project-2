@@ -5,7 +5,7 @@
 \maketitle
 
 
-\textbf{We are a bit behind schedule. This is an incomplete report. For the newest version of the report visit \href{https://github.com/erikfsk/Project-2}{\textcolor{blue}{github}}.}
+\textbf{We were bit behind schedule. This is an incomplete report. If it is needed we can write more on this report. We just thought that it would be better for us to focus on project 3.}
 
 \section{Abstract}
 
@@ -171,17 +171,9 @@ Here $\rho=r/\alpha$. $\alpha$ is fixed to $\alpha=\hbar^2/(m\beta e^2)$. A rela
 
 
 
-
-
-
-
-
-
-
-
-
-
 \section{Result}
+
+We ran the program for $\rho_{end} = 5$ and n equal to 10,20,40,80,160 and 320. In the tabular under is the result. We know that the eigenvalues should go to 3, 7 and 11. We can see that they are convergence 
 
 
 \begin{tabular}{|c|c|c|c|c|}
@@ -202,24 +194,13 @@ Here $\rho=r/\alpha$. $\alpha$ is fixed to $\alpha=\hbar^2/(m\beta e^2)$. A rela
 	\hline
 \end{tabular}
 
-
+There is something wrong with the interacting matrix. It always stops after 0.00002 secs and it gets eigenvalues equal to inf or nan. We dont know what is wrong and are moving on. 
 
 
 
 \section{Discussion}
 From the results we can see that Jacobi's algorithm solves the eigenvalue problem correctly according to the armadillo library. The eigenvalues for a given matrix should always be the same, irrespective of matrix operations, and that is indeed what we observe here. 
 	%We note that the eigenvalues for the interacting vs the non-interacting case are [INSERT RESULT]. 
-
-
-
-
-
-
-
-
-
-
-
 
 
 

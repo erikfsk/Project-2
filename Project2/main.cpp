@@ -32,13 +32,23 @@ int main (int argc, char *argv[])
 
 
     //int n = atoi(argv[1]);
-    int n = 10;
     double w_r = 0.5;
-    double rho_end = 9;
-    double h = (rho_end)/n;
+    double rho_end = 5;
 
-    noninteracting(n,h);
-    interacting(n,h,w_r);
+
+    boost::timer t_test;
+    t_test.elapsed();
+
+    for(int n = 10; n < 321; n = n*2){
+        double h = (rho_end)/n;
+        boost::timer t;
+        noninteracting(n,h);
+        cout << "Time usage noninteracting: " << t.elapsed() << endl;
+
+        boost::timer t_;
+        interacting(n,h,w_r);
+        cout << "Time usage interacting: " << t_.elapsed() << endl;
+    }
 }
 
 
@@ -56,7 +66,10 @@ void noninteracting(int n, double h){
         }
     }
 
-    cout << jacobi(V,n) << endl;
+    mat eig = sort(jacobi(V,n));
+    cout << eig(0) << endl;
+    cout << eig(1) << endl;
+    cout << eig(2) << endl;
 }
 
 
@@ -66,7 +79,7 @@ void interacting(int n, double h,double w_r){
 
     for (int i=0; i<n; i++) {
 
-        V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i)); //changed 1/(h*i) to 1/(h*h)
+        V(i,i)= (2/(h*h)) + (w_r*w_r*h*i*h*i) + (1/(h*i));
         if (i < n-1){
           V(i+1,i) = -1/(h*h);
         }
@@ -74,7 +87,6 @@ void interacting(int n, double h,double w_r){
           V(i-1,i) = -1/(h*h);
         }
     }
-    cout << jacobi(V,n) << endl;
 }
 
 
@@ -103,8 +115,8 @@ void jacobi_solver(mat &a,int n,int k,int l){
         t_ = -1.0/ (-tau + sqrt(1.0 + tau*tau));
     }
 
-    double c_ = 1/sqrt(1 + (t_*t_));//cos(theta)
-    double s_ = c_*t_;//sin(theta)
+    double c_ = 1/sqrt(1 + (t_*t_));    //cos(theta)
+    double s_ = c_*t_;                  //sin(theta)
     double a_kk = a(k,k);
     double a_ll = a(l,l);
     double a_kl = a(k,l);

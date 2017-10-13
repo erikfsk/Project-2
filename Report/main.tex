@@ -11,7 +11,10 @@
 
 
 \section{Introduction}
-The aim of this project is to create a program that finds eigenvalues with Jacobi's(Givens') method. We start off with studying the quantum mechanical problem of a particle in an infinite potential well, generating a general solution to find the eigenvalues of a matrix. Then moving on to two particles with Coulomb interactions.
+The aim of this project is to create a program that finds eigenvalues with Jacobi's(Givens') method. The eigenvalue problem is something taken for granted in newer times when everything from a mediocre calculator to a computer can solve them. Some commonly used algorithms are the Hairer's and ODEPACK's methods, used in fortran and python(scipy) and the Sundials and ARKCODE algorithms used in c++. For more advanced systems with more eigenvalues this is still a computing heavy problem with people still working on methods to simplify the algorithms.
+
+In this project the theory of how one can solve an eigenvalue problem is adressed with the Jacobis method. We start off with studying the quantum mechanical problem of a particle in a harmonic oscillator potential.
+This can be quantized and manipulated into a eigenvalue problem. From that a general solution to find the eigenvalues of a tridiagonal matrix can be applied. The general solution finder in this case is Jacobi's rotation algorithm. In the second part another particle is introduced into the system, generating a two particle problem. The two particles experiences Coulomb interactions.
 
 \section{Underlying theory}
 
@@ -119,9 +122,49 @@ The non-diagonal matrix elements:
 \begin{equation*}
 e_i=-\frac{1}{h^2}.
 \end{equation*}
+\subsubsection*{Analytical solution}
+In the case of an electron in a harmonic oscillator potential a analytical solution, although not pretty, has been found. The general form of the general solution with no angular momentum, $l=0$, is given below.
+
+\begin{align*}
+	R_{n,0}(r)=N_n\exp(-\frac{m\omega}{2\hbar}r^2)\sqrt{L_{n}}\qty(-\frac{m\omega}{2\hbar}r^2)
+\end{align*}
+With $L_n$ being the associated Laguerre polynomial.
+
+
+\subsection*{Two electrons}
+
+Another electron is now introduced to the system. Assume that the electrons does not interact with each other and that the angular momentum remains at zero. The new wavefunction will now take into account both particles in the system.
+
+\begin{align}
+	-&\frac{\hbar^2}{2m}\pdv[2]{u(r_1,r_2)}{r_1}\pdv[2]{u(r_1,r_2)}{r_2}+V(r_1,r_2)u(r)=Eu(r_1,r_2)
+\end{align}
+
+To simplify this expression as much as possible several tricks are applied to the equation. Firstly the system can be rewritten in terms of a center of mass, $R=(r_1+r_2)/2$, with a relative radial coordinate $r=r_1+r_2$. This gives the possibility of separation of variables separating the center of mass and the radial coordinate.  
+
+\begin{align}
+	-&\frac{\hbar^2}{2m}\pdv[2]{\psi(r)}{r}+\frac{1}{2}m\omega^2r^2\psi(r)=E\psi(r)
+\end{align}
+
+In addition to this, one has to take into account a new force not present in the one particle case. That is the coulomb interaction $V(r)=\beta e^2/r$. This gives the new wavefunction:
+
+\begin{align}
+-&\frac{\hbar^2}{2m}\pdv[2]{\psi(r)}{r}+\qty(\frac{1}{2}m\omega^2r^2+\frac{\beta e^2}{r})\psi(r)=E\psi(r)
+\end{align}
+
+As for the one dimensional case dimensionless variables are introduced, giving the dimensionless two particle TISE:
+\begin{align}
+	-\dv{\psi[2](\rho)}{\rho}+\qty(\omega_r^2\rho^2)\psi(\rho)=E_r\psi(\rho)
+\end{align}
+
+Here $\rho=r/\alpha$. $\alpha$ is fixed to $\alpha=\hbar^2/(m\beta e^2)$. A relative frequency $\omega_r$ and energy parameter $\lambda$ is introduced. This new equation is rewritten in such a way to be similar to the one particle case, making it easier to implement into the program.
+
+
+
+
+
 
 \section{Method}
-
+	By writing a function which implements Jacobi's rotation algorithm we solve the eigenvalue problem $A\vb{x} = \lambda \vb{x}$, where $A$ is a tridiagonal matrix. We do this both for a system of noninteracting and interacting electrons (interaction manifesting as a repulsing coulomb force between the electrons). We then compare the results with the linear algebra library Armadillo, used as a reference. Under the implementation we introduce tests to make sure each part of the code is doing what it should. For instance, the function that finds the largest value of a non-diagonal element in a matrix should do this consistently for all matrices; and for a known simple matrix we should always have the same and correct eigenvalues. In the implementation we also take advantage of the fact that we can scale our system as we please to keep the constants manageable.
 
 
 
@@ -156,6 +199,10 @@ e_i=-\frac{1}{h^2}.
 
 
 \section{Discussion}
+From the results we can see that Jacobi's algorithm solves the eigenvalue problem correctly according to the armadillo library. The eigenvalues for a given matrix should always be the same, irrespective of matrix operations, and that is indeed what we observe here. 
+	%We note that the eigenvalues for the interacting vs the non-interacting case are [INSERT RESULT]. 
+
+
 
 
 
@@ -173,7 +220,7 @@ e_i=-\frac{1}{h^2}.
 
 
 \section{Conclusion}
-
+It is apparent that Jacobi's rotation algorithm is an efficient method of finding eigenvalues for tridiagonal matrices.
 
 
 
